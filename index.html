@@ -203,11 +203,11 @@
         </div>
     </div>
 
-    <!-- Используем стабильный сервер WebSocket -->
+    <!-- Используем рабочий сервер WebSocket -->
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
     <script>
-        // Подключение к надежному WebSocket серверу
-        const socket = io('https://realtime-chat-server-6a0d.onrender.com');
+        // Подключение к проверенному WebSocket серверу
+        const socket = io('https://socketio-chat-server-6ewo.onrender.com');
         
         // Элементы DOM
         const chatMessages = document.getElementById('chat-messages');
@@ -221,7 +221,6 @@
         let username = '';
         let isRegistered = false;
         let typingTimeout = null;
-        const pendingMessages = new Set();
         
         // Запрос имени пользователя
         function registerUser() {
@@ -247,12 +246,7 @@
         });
         
         socket.on('chat message', data => {
-            // Проверяем, не было ли это сообщение уже добавлено локально
-            if (!pendingMessages.has(data.id)) {
-                addMessage(data, data.sender === username);
-            } else {
-                pendingMessages.delete(data.id);
-            }
+            addMessage(data, data.sender === username);
         });
         
         socket.on('user connected', name => {
@@ -309,19 +303,16 @@
         function sendMessage() {
             const text = messageInput.value.trim();
             if (text && isRegistered) {
-                const messageId = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
                 const message = {
-                    id: messageId,
                     sender: username,
                     text: text,
                     time: new Date().toISOString()
                 };
                 
-                // Добавляем сообщение локально сразу
+                // Добавляем свое сообщение сразу локально
                 addMessage(message, true);
-                pendingMessages.add(messageId);
                 
-                // Отправляем на сервер
+                // Отправляем на сервер для других пользователей
                 socket.emit('chat message', message);
                 
                 messageInput.value = '';
@@ -352,12 +343,14 @@
                 socket.emit('user disconnect', username);
             }
         });
-        
-        // Переподключение при потере соединения
-        socket.on('disconnect', () => {
-            addSystemMessage("Соединение потеряно, переподключаемся...");
+
+        // Обработка ошибок подключения
+        socket.on('connect_error', (error) => {
+            addSystemMessage("Ошибка подключения к серверу чата");
+            console.error('Connection error:', error);
         });
-        
+
+        // Переподключение
         socket.on('reconnect', () => {
             if (isRegistered) {
                 socket.emit('register', username);
