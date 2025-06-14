@@ -3,53 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Chat</title>
+    <title>Telegram-style Bot Messenger</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            min-height: 100vh;
+            background: #0f1923;
+            color: #e6e6e6;
+            height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            overflow: hidden;
         }
         
-        .chat-container {
+        /* Telegram стиль */
+        .app-container {
+            display: flex;
             width: 100%;
-            max-width: 500px;
-            height: 80vh;
-            background-color: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            max-width: 1200px;
+            height: 95vh;
+            margin: auto;
+            background: #182533;
+            border-radius: 12px;
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Боковая панель с чатами */
+        .sidebar {
+            width: 360px;
+            background: #17212b;
+            border-right: 1px solid #1e2c3a;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         
-        .chat-header {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-            color: white;
+        .sidebar-header {
             padding: 20px;
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: bold;
+            background: #17212b;
+            border-bottom: 1px solid #1e2c3a;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         
-        .online-counter {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 5px 15px;
+        .search-bar {
+            padding: 10px 15px;
+            background: #202b36;
+            margin: 10px 15px;
             border-radius: 20px;
-            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: #e6e6e6;
+            padding: 5px 10px;
+            width: 100%;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .chats-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .chat-item {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #1e2c3a;
+        }
+        
+        .chat-item:hover {
+            background: #1e2c3a;
+        }
+        
+        .chat-item.active {
+            background: #2b5278;
+        }
+        
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-right: 15px;
+        }
+        
+        .chat-info {
+            flex: 1;
+        }
+        
+        .chat-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .last-message {
+            font-size: 13px;
+            color: #7f91a4;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 220px;
+        }
+        
+        /* Основная область чата */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0e1621;
+        }
+        
+        .chat-header {
+            padding: 15px 20px;
+            background: #17212b;
+            border-bottom: 1px solid #1e2c3a;
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-info {
+            margin-left: 15px;
+            flex: 1;
+        }
+        
+        .header-name {
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .header-status {
+            font-size: 13px;
+            color: #7f91a4;
         }
         
         .chat-messages {
@@ -58,90 +160,142 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.03"><rect width="100" height="100" fill="gray"/></svg>');
         }
         
         .message {
-            max-width: 80%;
-            padding: 12px 18px;
-            border-radius: 18px;
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
             position: relative;
             animation: fadeIn 0.3s ease;
+            font-size: 15px;
+            line-height: 1.4;
         }
         
         .received {
             align-self: flex-start;
-            background: #f0f2f5;
-            border-bottom-left-radius: 5px;
+            background: #182533;
+            border-top-left-radius: 2px;
+        }
+        
+        .received::before {
+            content: "";
+            position: absolute;
+            left: -8px;
+            top: 0;
+            border: 8px solid transparent;
+            border-top-color: #182533;
+            border-right-color: #182533;
         }
         
         .sent {
             align-self: flex-end;
-            background: #6a11cb;
-            color: white;
-            border-bottom-right-radius: 5px;
+            background: #2b5278;
+            border-top-right-radius: 2px;
+        }
+        
+        .sent::before {
+            content: "";
+            position: absolute;
+            right: -8px;
+            top: 0;
+            border: 8px solid transparent;
+            border-top-color: #2b5278;
+            border-left-color: #2b5278;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: #7f91a4;
+            text-align: right;
+            margin-top: 5px;
         }
         
         .message-info {
             display: flex;
             justify-content: space-between;
-            font-size: 0.7rem;
             margin-top: 5px;
-            opacity: 0.8;
+        }
+        
+        .message-sender {
+            font-weight: 500;
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+        
+        .chat-input-container {
+            padding: 15px;
+            background: #17212b;
+            border-top: 1px solid #1e2c3a;
+        }
+        
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #1e2c3a;
+            border-radius: 25px;
+            padding: 5px 15px;
         }
         
         .chat-input {
-            display: flex;
-            padding: 15px;
-            background: #f0f2f5;
-            border-top: 1px solid #ddd;
-        }
-        
-        .chat-input input {
             flex: 1;
-            padding: 12px 20px;
+            padding: 12px 5px;
             border: none;
-            border-radius: 30px;
+            background: transparent;
+            color: #e6e6e6;
             outline: none;
-            font-size: 1rem;
-            background: white;
+            font-size: 15px;
         }
         
-        .chat-input button {
-            background: #6a11cb;
-            color: white;
-            border: none;
-            width: 50px;
-            height: 50px;
+        .send-button {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            margin-left: 10px;
-            cursor: pointer;
-            transition: background 0.3s;
+            background: #2b5278;
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: none;
         }
         
-        .chat-input button:hover {
-            background: #2575fc;
-        }
-        
-        .system-message {
-            align-self: center;
-            background: #e0e0e0;
-            color: #666;
-            font-size: 0.9rem;
-            padding: 8px 15px;
-            border-radius: 10px;
-            margin: 10px 0;
-            text-align: center;
+        .send-button:hover {
+            background: #3c6a97;
         }
         
         .typing-indicator {
-            color: #666;
-            font-style: italic;
-            font-size: 0.9rem;
-            padding: 5px 15px;
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            background: #182533;
+            border-radius: 20px;
+            align-self: flex-start;
+            margin: 5px 0;
+            max-width: 150px;
+            font-size: 13px;
+            color: #7f91a4;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #7f91a4;
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
         }
         
         @keyframes fadeIn {
@@ -149,213 +303,383 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
+        /* Анимация для аватаров */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Стили для скроллбара */
         ::-webkit-scrollbar {
             width: 8px;
         }
         
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+            background: #0e1621;
+            border-radius: 10px;
         }
         
         ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
+            background: #2b5278;
+            border-radius: 10px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: #a0a0a0;
+            background: #3c6a97;
         }
         
-        @media (max-width: 500px) {
-            .chat-container {
-                height: 90vh;
-                border-radius: 15px;
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .app-container {
+                height: 100vh;
+                border-radius: 0;
             }
             
-            .chat-header {
-                padding: 15px;
-                font-size: 1.2rem;
+            .sidebar {
+                width: 80px;
+            }
+            
+            .sidebar-header h1, .search-bar, .last-message, .chat-info {
+                display: none;
+            }
+            
+            .chat-item {
+                justify-content: center;
+            }
+            
+            .chat-avatar {
+                margin-right: 0;
             }
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <div>Real-Time Chat</div>
-            <div class="online-counter">Онлайн: <span id="online-count">1</span></div>
+    <div class="app-container">
+        <!-- Боковая панель -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>DeepSeek Боты</h1>
+                <div class="actions">
+                    <i class="fas fa-edit"></i>
+                </div>
+            </div>
+            
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Поиск">
+            </div>
+            
+            <div class="chats-list">
+                <!-- Чат с Алисой -->
+                <div class="chat-item active" data-chat="alice">
+                    <div class="chat-avatar" style="background: linear-gradient(135deg, #8e44ad, #3498db);">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-name">Алиса</div>
+                        <div class="last-message">Привет! Я твой помощник</div>
+                    </div>
+                </div>
+                
+                <!-- Чат с Профессором -->
+                <div class="chat-item" data-chat="professor">
+                    <div class="chat-avatar" style="background: linear-gradient(135deg, #3498db, #2ecc71);">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-name">Профессор</div>
+                        <div class="last-message">Готов ответить на ваши вопросы</div>
+                    </div>
+                </div>
+                
+                <!-- Чат с Кибером -->
+                <div class="chat-item" data-chat="cyber">
+                    <div class="chat-avatar" style="background: linear-gradient(135deg, #e74c3c, #f39c12);">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-name">Кибер</div>
+                        <div class="last-message">Технический эксперт</div>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <div class="chat-messages" id="chat-messages">
-            <div class="system-message" id="welcome-message">Добро пожаловать в чат! Введите имя и начните общение.</div>
-        </div>
-        
-        <div class="typing-indicator" id="typing-indicator" style="display: none;"></div>
-        
-        <div class="chat-input">
-            <input type="text" id="message-input" placeholder="Введите сообщение..." disabled>
-            <button id="send-button" disabled>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px">
-                    <path d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                </svg>
-            </button>
+        <!-- Основной чат -->
+        <div class="chat-container">
+            <!-- Заголовок чата -->
+            <div class="chat-header">
+                <div class="chat-avatar" style="background: linear-gradient(135deg, #8e44ad, #3498db);">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="header-info">
+                    <div class="header-name">Алиса</div>
+                    <div class="header-status">online</div>
+                </div>
+                <div class="header-actions">
+                    <i class="fas fa-phone-alt"></i>
+                    <i class="fas fa-video"></i>
+                    <i class="fas fa-info-circle"></i>
+                </div>
+            </div>
+            
+            <!-- Область сообщений -->
+            <div class="chat-messages" id="chat-messages">
+                <!-- Сообщения будут добавляться здесь -->
+                <div class="message received">
+                    <div class="message-sender">Алиса</div>
+                    <div class="message-text">Бот сделан DeepSeek</div>
+                    <div class="message-text">Привет! Я Алиса, твой цифровой помощник. Чем могу помочь сегодня?</div>
+                    <div class="message-time">10:00</div>
+                </div>
+            </div>
+            
+            <!-- Поле ввода -->
+            <div class="chat-input-container">
+                <div class="input-wrapper">
+                    <button class="attach-button">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <input type="text" class="chat-input" placeholder="Введите сообщение..." id="message-input">
+                    <button class="send-button" id="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Используем рабочий сервер WebSocket -->
-    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
     <script>
-        // Подключение к проверенному WebSocket серверу
-        const socket = io('https://socketio-chat-server-6ewo.onrender.com');
+        // Определение ботов
+        const bots = {
+            alice: {
+                name: "Алиса",
+                avatar: "fa-robot",
+                color: "linear-gradient(135deg, #8e44ad, #3498db)",
+                description: "Цифровой помощник",
+                responses: [
+                    "Отличный вопрос! Давайте подумаем...",
+                    "Я всегда рада помочь!",
+                    "Это интересная тема для обсуждения!",
+                    "У меня есть несколько мыслей по этому поводу...",
+                    "Давайте рассмотрим этот вопрос подробнее."
+                ]
+            },
+            professor: {
+                name: "Профессор",
+                avatar: "fa-graduation-cap",
+                color: "linear-gradient(135deg, #3498db, #2ecc71)",
+                description: "Эксперт по науке",
+                responses: [
+                    "С научной точки зрения...",
+                    "Интересный вопрос! Согласно последним исследованиям...",
+                    "Как эксперт в этой области, я могу сказать...",
+                    "Это сложный вопрос, требующий глубокого анализа...",
+                    "Исторически сложилось, что..."
+                ]
+            },
+            cyber: {
+                name: "Кибер",
+                avatar: "fa-microchip",
+                color: "linear-gradient(135deg, #e74c3c, #f39c12)",
+                description: "Технический специалист",
+                responses: [
+                    "С технической точки зрения...",
+                    "В мире технологий это решается следующим образом...",
+                    "Я проанализировал ваш запрос и пришел к выводу...",
+                    "Оптимальным решением будет...",
+                    "Рассматривая этот вопрос с позиции эффективности..."
+                ]
+            }
+        };
         
         // Элементы DOM
+        const chatItems = document.querySelectorAll('.chat-item');
         const chatMessages = document.getElementById('chat-messages');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
-        const onlineCounter = document.getElementById('online-count');
-        const typingIndicator = document.getElementById('typing-indicator');
-        const welcomeMessage = document.getElementById('welcome-message');
+        const chatHeader = document.querySelector('.chat-header');
+        const headerName = document.querySelector('.header-name');
+        const headerStatus = document.querySelector('.header-status');
+        const headerAvatar = document.querySelector('.chat-header .chat-avatar');
         
-        // Данные пользователя
-        let username = '';
-        let isRegistered = false;
-        let typingTimeout = null;
+        // Текущий активный чат
+        let activeChat = 'alice';
         
-        // Запрос имени пользователя
-        function registerUser() {
-            const name = prompt("Введите ваше имя:", "Пользователь " + Math.floor(Math.random() * 1000));
-            if (name && name.trim()) {
-                username = name.trim();
-                socket.emit('register', username);
-                welcomeMessage.textContent = `Добро пожаловать, ${username}!`;
-                messageInput.disabled = false;
-                sendButton.disabled = false;
-                isRegistered = true;
-            } else {
-                alert("Имя обязательно для участия в чате!");
-                setTimeout(registerUser, 100);
-            }
+        // История сообщений
+        const chatHistory = {
+            alice: [
+                {
+                    sender: "bot",
+                    text: "Бот сделан DeepSeek",
+                    time: "10:00"
+                },
+                {
+                    sender: "bot",
+                    text: "Привет! Я Алиса, твой цифровой помощник. Чем могу помочь сегодня?",
+                    time: "10:00"
+                }
+            ],
+            professor: [
+                {
+                    sender: "bot",
+                    text: "Бот сделан DeepSeek",
+                    time: "10:00"
+                },
+                {
+                    sender: "bot",
+                    text: "Здравствуйте! Я Профессор, эксперт в научных вопросах. Задавайте свои вопросы!",
+                    time: "10:00"
+                }
+            ],
+            cyber: [
+                {
+                    sender: "bot",
+                    text: "Бот сделан DeepSeek",
+                    time: "10:00"
+                },
+                {
+                    sender: "bot",
+                    text: "Приветствую! Я Кибер, технический специалист. Готов помочь с технологическими вопросами.",
+                    time: "10:00"
+                }
+            ]
+        };
+        
+        // Инициализация чата
+        function initChat(chatId) {
+            activeChat = chatId;
+            const bot = bots[chatId];
+            
+            // Обновляем заголовок
+            headerName.textContent = bot.name;
+            headerStatus.textContent = "online";
+            headerAvatar.innerHTML = `<i class="fas ${bot.avatar}"></i>`;
+            headerAvatar.style.background = bot.color;
+            
+            // Очищаем сообщения
+            chatMessages.innerHTML = '';
+            
+            // Загружаем историю
+            chatHistory[chatId].forEach(msg => {
+                addMessage(msg.text, msg.sender === 'bot' ? 'received' : 'sent', msg.time, bot.name);
+            });
         }
         
-        registerUser();
-        
-        // Обработчики событий Socket.IO
-        socket.on('user count', count => {
-            onlineCounter.textContent = count;
-        });
-        
-        socket.on('chat message', data => {
-            addMessage(data, data.sender === username);
-        });
-        
-        socket.on('user connected', name => {
-            addSystemMessage(`${name} подключился к чату`);
-        });
-        
-        socket.on('user disconnected', name => {
-            addSystemMessage(`${name} покинул чат`);
-        });
-        
-        socket.on('typing', data => {
-            if (data.sender !== username) {
-                typingIndicator.textContent = `${data.sender} печатает...`;
-                typingIndicator.style.display = 'block';
-                
-                clearTimeout(typingTimeout);
-                typingTimeout = setTimeout(() => {
-                    typingIndicator.style.display = 'none';
-                }, 2000);
-            }
-        });
-        
-        // Функция добавления сообщения
-        function addMessage(data, isOwn = false) {
+        // Добавление сообщения
+        function addMessage(text, type, time = null, senderName = null) {
             const messageElement = document.createElement('div');
-            const senderClass = isOwn ? 'sent' : 'received';
-            messageElement.classList.add('message', senderClass);
+            messageElement.classList.add('message', type);
             
-            const time = new Date(data.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const now = new Date();
+            if (!time) {
+                time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+            }
             
-            messageElement.innerHTML = `
-                <div class="message-text">${data.text}</div>
-                <div class="message-info">
-                    <span>${isOwn ? 'Вы' : data.sender}</span>
-                    <span>${time}</span>
-                </div>
-            `;
+            if (type === 'received' && senderName) {
+                messageElement.innerHTML = `
+                    <div class="message-sender">${senderName}</div>
+                    <div class="message-text">${text}</div>
+                    <div class="message-time">${time}</div>
+                `;
+            } else {
+                messageElement.innerHTML = `
+                    <div class="message-text">${text}</div>
+                    <div class="message-time">${time}</div>
+                `;
+            }
             
             chatMessages.appendChild(messageElement);
             chatMessages.scrollTop = chatMessages.scrollHeight;
-            typingIndicator.style.display = 'none';
         }
         
-        // Системные сообщения
-        function addSystemMessage(text) {
-            const systemMsg = document.createElement('div');
-            systemMsg.classList.add('system-message');
-            systemMsg.textContent = text;
-            chatMessages.appendChild(systemMsg);
+        // Показать индикатор набора
+        function showTypingIndicator(botName) {
+            const typingElement = document.createElement('div');
+            typingElement.classList.add('typing-indicator');
+            typingElement.id = 'typing-indicator';
+            typingElement.innerHTML = `
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+                <span>${botName} печатает...</span>
+            `;
+            chatMessages.appendChild(typingElement);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+            return typingElement;
         }
         
         // Отправка сообщения
         function sendMessage() {
-            const text = messageInput.value.trim();
-            if (text && isRegistered) {
-                const message = {
-                    sender: username,
-                    text: text,
-                    time: new Date().toISOString()
-                };
+            const message = messageInput.value.trim();
+            if (message) {
+                const now = new Date();
+                const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
                 
-                // Добавляем свое сообщение сразу локально
-                addMessage(message, true);
-                
-                // Отправляем на сервер для других пользователей
-                socket.emit('chat message', message);
+                // Добавляем сообщение пользователя
+                addMessage(message, 'sent', time);
+                chatHistory[activeChat].push({
+                    sender: "user",
+                    text: message,
+                    time: time
+                });
                 
                 messageInput.value = '';
+                
+                // Бот "печатает"
+                const bot = bots[activeChat];
+                const typingIndicator = showTypingIndicator(bot.name);
+                
+                // Бот "думает" 1-3 секунды
+                setTimeout(() => {
+                    // Убираем индикатор
+                    typingIndicator.remove();
+                    
+                    // Генерируем ответ
+                    const response = bot.responses[Math.floor(Math.random() * bot.responses.length)];
+                    const botTime = `${now.getHours()}:${(now.getMinutes() + 1).toString().padStart(2, '0')}`;
+                    
+                    // Добавляем ответ бота
+                    addMessage(response, 'received', botTime, bot.name);
+                    chatHistory[activeChat].push({
+                        sender: "bot",
+                        text: response,
+                        time: botTime
+                    });
+                }, 1000 + Math.random() * 2000);
             }
         }
         
-        // Отправка статуса печатания
-        function sendTyping() {
-            if (isRegistered && messageInput.value.trim()) {
-                socket.emit('typing', { sender: username });
-            }
-        }
+        // Переключение чатов
+        chatItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Убираем активный класс
+                chatItems.forEach(i => i.classList.remove('active'));
+                // Добавляем активный класс текущему
+                item.classList.add('active');
+                
+                // Инициализируем чат
+                const chatId = item.dataset.chat;
+                initChat(chatId);
+            });
+        });
         
         // Обработчики событий
         sendButton.addEventListener('click', sendMessage);
         
-        messageInput.addEventListener('keypress', e => {
-            if (e.key === 'Enter') sendMessage();
-        });
-        
-        messageInput.addEventListener('input', () => {
-            sendTyping();
-        });
-        
-        // Уведомление при закрытии вкладки
-        window.addEventListener('beforeunload', () => {
-            if (isRegistered) {
-                socket.emit('user disconnect', username);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
             }
         });
-
-        // Обработка ошибок подключения
-        socket.on('connect_error', (error) => {
-            addSystemMessage("Ошибка подключения к серверу чата");
-            console.error('Connection error:', error);
-        });
-
-        // Переподключение
-        socket.on('reconnect', () => {
-            if (isRegistered) {
-                socket.emit('register', username);
-                addSystemMessage("Соединение восстановлено!");
-            }
+        
+        // Инициализация первого чата
+        window.addEventListener('load', () => {
+            initChat('alice');
+            messageInput.focus();
         });
     </script>
 </body>
