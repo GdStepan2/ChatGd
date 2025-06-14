@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realtime Chat - GitHub Pages</title>
+    <title>Real-Time Chat</title>
     <style>
         * {
             margin: 0;
@@ -182,7 +182,7 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <div>Realtime Chat</div>
+            <div>Real-Time Chat</div>
             <div class="online-counter">Онлайн: <span id="online-count">1</span></div>
         </div>
         
@@ -203,11 +203,11 @@
         </div>
     </div>
 
-    <!-- Используем публичный сервер WebSocket -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.js"></script>
+    <!-- Используем стабильный сервер WebSocket -->
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
     <script>
-        // Подключение к публичному WebSocket серверу
-        const socket = io('wss://realtime-chat-server.onrender.com');
+        // Подключение к надежному WebSocket серверу
+        const socket = io('https://realtime-chat-server-6a0d.onrender.com');
         
         // Элементы DOM
         const chatMessages = document.getElementById('chat-messages');
@@ -221,6 +221,7 @@
         let username = '';
         let isRegistered = false;
         let typingTimeout = null;
+        const pendingMessages = new Set();
         
         // Запрос имени пользователя
         function registerUser() {
@@ -246,7 +247,12 @@
         });
         
         socket.on('chat message', data => {
-            addMessage(data, data.sender === username);
+            // Проверяем, не было ли это сообщение уже добавлено локально
+            if (!pendingMessages.has(data.id)) {
+                addMessage(data, data.sender === username);
+            } else {
+                pendingMessages.delete(data.id);
+            }
         });
         
         socket.on('user connected', name => {
@@ -303,13 +309,21 @@
         function sendMessage() {
             const text = messageInput.value.trim();
             if (text && isRegistered) {
+                const messageId = Date.now() + '-' + Math.random().toString(36).substr(2, 5);
                 const message = {
+                    id: messageId,
                     sender: username,
                     text: text,
                     time: new Date().toISOString()
                 };
                 
+                // Добавляем сообщение локально сразу
+                addMessage(message, true);
+                pendingMessages.add(messageId);
+                
+                // Отправляем на сервер
                 socket.emit('chat message', message);
+                
                 messageInput.value = '';
             }
         }
@@ -336,6 +350,18 @@
         window.addEventListener('beforeunload', () => {
             if (isRegistered) {
                 socket.emit('user disconnect', username);
+            }
+        });
+        
+        // Переподключение при потере соединения
+        socket.on('disconnect', () => {
+            addSystemMessage("Соединение потеряно, переподключаемся...");
+        });
+        
+        socket.on('reconnect', () => {
+            if (isRegistered) {
+                socket.emit('register', username);
+                addSystemMessage("Соединение восстановлено!");
             }
         });
     </script>
