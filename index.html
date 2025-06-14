@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Современный Чат</title>
+    <title>Realtime Chat - GitHub Pages</title>
     <style>
         * {
             margin: 0;
@@ -40,6 +40,16 @@
             text-align: center;
             font-size: 1.5rem;
             font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .online-counter {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
         }
         
         .chat-messages {
@@ -72,11 +82,12 @@
             border-bottom-right-radius: 5px;
         }
         
-        .message-time {
+        .message-info {
+            display: flex;
+            justify-content: space-between;
             font-size: 0.7rem;
             margin-top: 5px;
             opacity: 0.8;
-            text-align: right;
         }
         
         .chat-input {
@@ -106,10 +117,31 @@
             margin-left: 10px;
             cursor: pointer;
             transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .chat-input button:hover {
             background: #2575fc;
+        }
+        
+        .system-message {
+            align-self: center;
+            background: #e0e0e0;
+            color: #666;
+            font-size: 0.9rem;
+            padding: 8px 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .typing-indicator {
+            color: #666;
+            font-style: italic;
+            font-size: 0.9rem;
+            padding: 5px 15px;
         }
         
         @keyframes fadeIn {
@@ -117,7 +149,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Стили для скроллбара */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -134,21 +165,36 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #a0a0a0;
         }
+        
+        @media (max-width: 500px) {
+            .chat-container {
+                height: 90vh;
+                border-radius: 15px;
+            }
+            
+            .chat-header {
+                padding: 15px;
+                font-size: 1.2rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <h1>Красивый Чат</h1>
+            <div>Realtime Chat</div>
+            <div class="online-counter">Онлайн: <span id="online-count">1</span></div>
         </div>
         
         <div class="chat-messages" id="chat-messages">
-            <!-- Сообщения будут добавляться здесь -->
+            <div class="system-message" id="welcome-message">Добро пожаловать в чат! Введите имя и начните общение.</div>
         </div>
         
+        <div class="typing-indicator" id="typing-indicator" style="display: none;"></div>
+        
         <div class="chat-input">
-            <input type="text" id="message-input" placeholder="Введите сообщение...">
-            <button id="send-button">
+            <input type="text" id="message-input" placeholder="Введите сообщение..." disabled>
+            <button id="send-button" disabled>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="24px" height="24px">
                     <path d="M0 0h24v24H0z" fill="none"/>
                     <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -157,68 +203,139 @@
         </div>
     </div>
 
+    <!-- Используем публичный сервер WebSocket -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.js"></script>
     <script>
+        // Подключение к публичному WebSocket серверу
+        const socket = io('wss://realtime-chat-server.onrender.com');
+        
+        // Элементы DOM
         const chatMessages = document.getElementById('chat-messages');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
+        const onlineCounter = document.getElementById('online-count');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const welcomeMessage = document.getElementById('welcome-message');
         
-        // Пример начальных сообщений
-        const initialMessages = [
-            { text: "Привет! Как дела?", sender: "received", time: "10:00" },
-            { text: "Отлично, спасибо! А у тебя?", sender: "sent", time: "10:01" },
-            { text: "Тоже всё хорошо! Что нового?", sender: "received", time: "10:02" }
-        ];
+        // Данные пользователя
+        let username = '';
+        let isRegistered = false;
+        let typingTimeout = null;
         
-        // Добавляем начальные сообщения
-        initialMessages.forEach(msg => addMessage(msg.text, msg.sender, msg.time));
+        // Запрос имени пользователя
+        function registerUser() {
+            const name = prompt("Введите ваше имя:", "Пользователь " + Math.floor(Math.random() * 1000));
+            if (name && name.trim()) {
+                username = name.trim();
+                socket.emit('register', username);
+                welcomeMessage.textContent = `Добро пожаловать, ${username}!`;
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                isRegistered = true;
+            } else {
+                alert("Имя обязательно для участия в чате!");
+                setTimeout(registerUser, 100);
+            }
+        }
+        
+        registerUser();
+        
+        // Обработчики событий Socket.IO
+        socket.on('user count', count => {
+            onlineCounter.textContent = count;
+        });
+        
+        socket.on('chat message', data => {
+            addMessage(data, data.sender === username);
+        });
+        
+        socket.on('user connected', name => {
+            addSystemMessage(`${name} подключился к чату`);
+        });
+        
+        socket.on('user disconnected', name => {
+            addSystemMessage(`${name} покинул чат`);
+        });
+        
+        socket.on('typing', data => {
+            if (data.sender !== username) {
+                typingIndicator.textContent = `${data.sender} печатает...`;
+                typingIndicator.style.display = 'block';
+                
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => {
+                    typingIndicator.style.display = 'none';
+                }, 2000);
+            }
+        });
         
         // Функция добавления сообщения
-        function addMessage(text, sender, time = null) {
+        function addMessage(data, isOwn = false) {
             const messageElement = document.createElement('div');
-            messageElement.classList.add('message', sender);
+            const senderClass = isOwn ? 'sent' : 'received';
+            messageElement.classList.add('message', senderClass);
             
-            if (!time) {
-                const now = new Date();
-                time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
-            }
+            const time = new Date(data.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
             messageElement.innerHTML = `
-                <div class="message-text">${text}</div>
-                <div class="message-time">${time}</div>
+                <div class="message-text">${data.text}</div>
+                <div class="message-info">
+                    <span>${isOwn ? 'Вы' : data.sender}</span>
+                    <span>${time}</span>
+                </div>
             `;
             
             chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            typingIndicator.style.display = 'none';
+        }
+        
+        // Системные сообщения
+        function addSystemMessage(text) {
+            const systemMsg = document.createElement('div');
+            systemMsg.classList.add('system-message');
+            systemMsg.textContent = text;
+            chatMessages.appendChild(systemMsg);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         
         // Отправка сообщения
         function sendMessage() {
-            const message = messageInput.value.trim();
-            if (message) {
-                addMessage(message, 'sent');
-                messageInput.value = '';
+            const text = messageInput.value.trim();
+            if (text && isRegistered) {
+                const message = {
+                    sender: username,
+                    text: text,
+                    time: new Date().toISOString()
+                };
                 
-                // Имитация ответа
-                setTimeout(() => {
-                    const responses = [
-                        "Интересно! Расскажи подробнее.",
-                        "Понятно, спасибо за информацию!",
-                        "Я подумаю над этим...",
-                        "Отличная мысль!",
-                        "Что ты об этом думаешь?"
-                    ];
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                    addMessage(randomResponse, 'received');
-                }, 1000);
+                socket.emit('chat message', message);
+                messageInput.value = '';
+            }
+        }
+        
+        // Отправка статуса печатания
+        function sendTyping() {
+            if (isRegistered && messageInput.value.trim()) {
+                socket.emit('typing', { sender: username });
             }
         }
         
         // Обработчики событий
         sendButton.addEventListener('click', sendMessage);
         
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
+        messageInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        messageInput.addEventListener('input', () => {
+            sendTyping();
+        });
+        
+        // Уведомление при закрытии вкладки
+        window.addEventListener('beforeunload', () => {
+            if (isRegistered) {
+                socket.emit('user disconnect', username);
             }
         });
     </script>
