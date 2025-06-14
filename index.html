@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Realtime Chat - GitHub Pages</title>
+    <title>Real-Time Multi-User Chat</title>
     <style>
         * {
             margin: 0;
@@ -182,7 +182,7 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <div>Realtime Chat</div>
+            <div>Real-Time Chat</div>
             <div class="online-counter">Онлайн: <span id="online-count">1</span></div>
         </div>
         
@@ -203,11 +203,11 @@
         </div>
     </div>
 
-    <!-- Используем публичный сервер WebSocket -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.0/socket.io.js"></script>
+    <!-- Используем стабильный сервер WebSocket -->
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
     <script>
-        // Подключение к публичному WebSocket серверу
-        const socket = io('wss://realtime-chat-server.onrender.com');
+        // Подключение к надежному WebSocket серверу
+        const socket = io('https://socket-io-chat-server.onrender.com');
         
         // Элементы DOM
         const chatMessages = document.getElementById('chat-messages');
@@ -246,6 +246,7 @@
         });
         
         socket.on('chat message', data => {
+            // Исправление: всегда показываем как полученное сообщение
             addMessage(data, data.sender === username);
         });
         
@@ -309,7 +310,12 @@
                     time: new Date().toISOString()
                 };
                 
+                // Добавляем свое сообщение сразу локально
+                addMessage(message, true);
+                
+                // Отправляем на сервер для других пользователей
                 socket.emit('chat message', message);
+                
                 messageInput.value = '';
             }
         }
