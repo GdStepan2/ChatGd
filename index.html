@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram-style Bot Messenger</title>
+    <title>DeepSeek Messenger</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -17,21 +17,84 @@
             background: #0f1923;
             color: #e6e6e6;
             height: 100vh;
-            display: flex;
             overflow: hidden;
         }
         
-        /* Telegram стиль */
+        /* Экран выбора устройства */
+        .device-selector {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .device-selector h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .device-options {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 800px;
+        }
+        
+        .device-option {
+            width: 280px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .device-option:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .device-option i {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            color: #4b6cb7;
+        }
+        
+        .device-option h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .device-option p {
+            color: #b3c6e7;
+            line-height: 1.6;
+        }
+        
+        /* Основной контейнер приложения */
         .app-container {
             display: flex;
             width: 100%;
-            max-width: 1200px;
-            height: 95vh;
-            margin: auto;
+            height: 100vh;
             background: #182533;
-            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
         
         /* Боковая панель с чатами */
@@ -303,13 +366,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Анимация для аватаров */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
         /* Стили для скроллбара */
         ::-webkit-scrollbar {
             width: 8px;
@@ -329,40 +385,132 @@
             background: #3c6a97;
         }
         
-        /* Адаптивность */
-        @media (max-width: 768px) {
-            .app-container {
-                height: 100vh;
-                border-radius: 0;
-            }
-            
-            .sidebar {
-                width: 80px;
-            }
-            
-            .sidebar-header h1, .search-bar, .last-message, .chat-info {
-                display: none;
-            }
-            
-            .chat-item {
-                justify-content: center;
-            }
-            
-            .chat-avatar {
-                margin-right: 0;
-            }
+        /* Модальное окно обновления */
+        .update-modal {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #17212b;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 1000;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            border: 1px solid #2b5278;
+            max-width: 300px;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .update-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: #7f91a4;
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .close-btn:hover {
+            color: #e6e6e6;
+        }
+        
+        /* Стили для мобильного вида */
+        .mobile-view .sidebar {
+            width: 70px;
+        }
+        
+        .mobile-view .sidebar-header h1, 
+        .mobile-view .search-bar, 
+        .mobile-view .last-message, 
+        .mobile-view .chat-info {
+            display: none;
+        }
+        
+        .mobile-view .chat-item {
+            justify-content: center;
+            padding: 15px 10px;
+        }
+        
+        .mobile-view .chat-avatar {
+            margin-right: 0;
+        }
+        
+        .mobile-view .header-actions {
+            display: none;
+        }
+        
+        .mobile-view .chat-header {
+            padding: 10px 15px;
+        }
+        
+        .mobile-view .chat-messages {
+            padding: 15px;
+        }
+        
+        .mobile-view .message {
+            max-width: 85%;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <!-- Экран выбора устройства -->
+    <div class="device-selector" id="device-selector">
+        <h1>Добро пожаловать в DeepSeek Messenger</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 40px; max-width: 600px; color: #b3c6e7;">
+            Пожалуйста, выберите тип вашего устройства для оптимального отображения интерфейса
+        </p>
+        
+        <div class="device-options">
+            <div class="device-option" data-device="phone">
+                <i class="fas fa-mobile-alt"></i>
+                <h2>Телефон</h2>
+                <p>Оптимизированный интерфейс для мобильных устройств с удобным управлением</p>
+            </div>
+            
+            <div class="device-option" data-device="pc">
+                <i class="fas fa-desktop"></i>
+                <h2>Компьютер</h2>
+                <p>Полнофункциональный интерфейс для компьютеров с расширенными возможностями</p>
+            </div>
+        </div>
+        
+        <p style="margin-top: 40px; color: #7f91a4; max-width: 500px;">
+            Вы всегда сможете изменить этот выбор в настройках приложения
+        </p>
+    </div>
+    
+    <!-- Модальное окно обновления -->
+    <div class="update-modal" id="update-modal" style="display: none;">
+        <div class="update-header">
+            <h3>Обновление бота</h3>
+            <button class="close-btn" id="close-update-modal">&times;</button>
+        </div>
+        <p>Бот обновлён до версии 1.1</p>
+        <p style="margin-top: 10px; font-size: 0.9rem; color: #7f91a4;">
+            • Улучшена производительность<br>
+            • Добавлены новые функции<br>
+            • Исправлены известные ошибки
+        </p>
+    </div>
+
+    <!-- Основное приложение -->
+    <div class="app-container" id="app-container" style="display: none;">
         <!-- Боковая панель -->
         <div class="sidebar">
             <div class="sidebar-header">
                 <h1>DeepSeek Боты</h1>
-                <div class="actions">
-                    <i class="fas fa-edit"></i>
-                </div>
             </div>
             
             <div class="search-bar">
@@ -403,6 +551,17 @@
                         <div class="last-message">Технический эксперт</div>
                     </div>
                 </div>
+                
+                <!-- Чат с Пожертвованиями -->
+                <div class="chat-item" data-chat="donate">
+                    <div class="chat-avatar" style="background: linear-gradient(135deg, #f1c40f, #e67e22);">
+                        <i class="fas fa-donate"></i>
+                    </div>
+                    <div class="chat-info">
+                        <div class="chat-name">Пожертвовать</div>
+                        <div class="last-message">Поддержать разработчика</div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -416,11 +575,6 @@
                 <div class="header-info">
                     <div class="header-name">Алиса</div>
                     <div class="header-status">online</div>
-                </div>
-                <div class="header-actions">
-                    <i class="fas fa-phone-alt"></i>
-                    <i class="fas fa-video"></i>
-                    <i class="fas fa-info-circle"></i>
                 </div>
             </div>
             
@@ -438,9 +592,6 @@
             <!-- Поле ввода -->
             <div class="chat-input-container">
                 <div class="input-wrapper">
-                    <button class="attach-button">
-                        <i class="fas fa-paperclip"></i>
-                    </button>
                     <input type="text" class="chat-input" placeholder="Введите сообщение..." id="message-input">
                     <button class="send-button" id="send-button">
                         <i class="fas fa-paper-plane"></i>
@@ -491,10 +642,19 @@
                     "Оптимальным решением будет...",
                     "Рассматривая этот вопрос с позиции эффективности..."
                 ]
+            },
+            donate: {
+                name: "Пожертвовать",
+                avatar: "fa-donate",
+                color: "linear-gradient(135deg, #f1c40f, #e67e22)",
+                description: "Поддержка разработчика",
+                responses: []
             }
         };
         
         // Элементы DOM
+        const deviceSelector = document.getElementById('device-selector');
+        const appContainer = document.getElementById('app-container');
         const chatItems = document.querySelectorAll('.chat-item');
         const chatMessages = document.getElementById('chat-messages');
         const messageInput = document.getElementById('message-input');
@@ -503,9 +663,58 @@
         const headerName = document.querySelector('.header-name');
         const headerStatus = document.querySelector('.header-status');
         const headerAvatar = document.querySelector('.chat-header .chat-avatar');
+        const updateModal = document.getElementById('update-modal');
+        const closeUpdateModal = document.getElementById('close-update-modal');
+        const body = document.body;
         
         // Текущий активный чат
         let activeChat = 'alice';
+        let deviceType = '';
+        let firstVisit = true;
+        
+        // Проверяем, было ли уже выбрано устройство
+        if (localStorage.getItem('deviceSelected')) {
+            deviceType = localStorage.getItem('deviceType');
+            deviceSelector.style.display = 'none';
+            appContainer.style.display = 'flex';
+            
+            // Применяем класс для мобильного вида
+            if (deviceType === 'phone') {
+                body.classList.add('mobile-view');
+            }
+            
+            // Проверяем, нужно ли показать обновление
+            checkForUpdate();
+        }
+        
+        // Обработчики выбора устройства
+        document.querySelectorAll('.device-option').forEach(option => {
+            option.addEventListener('click', () => {
+                deviceType = option.dataset.device;
+                localStorage.setItem('deviceSelected', 'true');
+                localStorage.setItem('deviceType', deviceType);
+                
+                // Применяем класс для мобильного вида
+                if (deviceType === 'phone') {
+                    body.classList.add('mobile-view');
+                }
+                
+                // Прячем выбор устройства и показываем приложение
+                deviceSelector.style.display = 'none';
+                appContainer.style.display = 'flex';
+                
+                // Показываем сообщение об обновлении
+                setTimeout(() => {
+                    updateModal.style.display = 'block';
+                    firstVisit = false;
+                }, 1000);
+            });
+        });
+        
+        // Закрытие модального окна обновления
+        closeUpdateModal.addEventListener('click', () => {
+            updateModal.style.display = 'none';
+        });
         
         // История сообщений
         const chatHistory = {
@@ -544,6 +753,18 @@
                     text: "Приветствую! Я Кибер, технический специалист. Готов помочь с технологическими вопросами.",
                     time: "10:00"
                 }
+            ],
+            donate: [
+                {
+                    sender: "bot",
+                    text: "Бот сделан DeepSeek",
+                    time: "10:00"
+                },
+                {
+                    sender: "bot",
+                    text: "Спасибо за желание поддержать разработчика! Сейчас вы будете перенаправлены на страницу пожертвований.",
+                    time: "10:00"
+                }
             ]
         };
         
@@ -565,6 +786,13 @@
             chatHistory[chatId].forEach(msg => {
                 addMessage(msg.text, msg.sender === 'bot' ? 'received' : 'sent', msg.time, bot.name);
             });
+            
+            // Для чата пожертвований сразу перенаправляем
+            if (chatId === 'donate') {
+                setTimeout(() => {
+                    window.open('https://www.donationalerts.com/r/gdstepan2', '_blank');
+                }, 2000);
+            }
         }
         
         // Добавление сообщения
@@ -629,6 +857,9 @@
                 
                 messageInput.value = '';
                 
+                // Для чата пожертвований не отвечаем
+                if (activeChat === 'donate') return;
+                
                 // Бот "печатает"
                 const bot = bots[activeChat];
                 const typingIndicator = showTypingIndicator(bot.name);
@@ -667,6 +898,21 @@
             });
         });
         
+        // Проверка обновлений
+        function checkForUpdate() {
+            const lastVersion = localStorage.getItem('appVersion');
+            const currentVersion = '1.1';
+            
+            if (!lastVersion || lastVersion !== currentVersion) {
+                localStorage.setItem('appVersion', currentVersion);
+                
+                // Показываем сообщение об обновлении
+                setTimeout(() => {
+                    updateModal.style.display = 'block';
+                }, 1000);
+            }
+        }
+        
         // Обработчики событий
         sendButton.addEventListener('click', sendMessage);
         
@@ -678,8 +924,10 @@
         
         // Инициализация первого чата
         window.addEventListener('load', () => {
-            initChat('alice');
-            messageInput.focus();
+            if (localStorage.getItem('deviceSelected')) {
+                initChat('alice');
+                messageInput.focus();
+            }
         });
     </script>
 </body>
