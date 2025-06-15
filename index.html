@@ -18,6 +18,12 @@
             color: #e6e6e6;
             height: 100vh;
             overflow: hidden;
+            transition: background 0.4s ease;
+        }
+        
+        body.light-theme {
+            background: #f0f2f5;
+            color: #333;
         }
         
         /* Экран выбора устройства */
@@ -95,6 +101,11 @@
             height: 100vh;
             background: #182533;
             overflow: hidden;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .app-container {
+            background: #eef2f5;
         }
         
         /* Боковая панель с чатами */
@@ -105,6 +116,12 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .sidebar {
+            background: #ffffff;
+            border-right: 1px solid #d1d7db;
         }
         
         .sidebar-header {
@@ -114,6 +131,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .sidebar-header {
+            background: #ffffff;
+            border-bottom: 1px solid #d1d7db;
         }
         
         .search-bar {
@@ -123,6 +146,11 @@
             border-radius: 20px;
             display: flex;
             align-items: center;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .search-bar {
+            background: #f0f2f5;
         }
         
         .search-bar input {
@@ -133,6 +161,11 @@
             width: 100%;
             outline: none;
             font-size: 14px;
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .search-bar input {
+            color: #333;
         }
         
         .chats-list {
@@ -149,12 +182,24 @@
             border-bottom: 1px solid #1e2c3a;
         }
         
+        .light-theme .chat-item {
+            border-bottom: 1px solid #d1d7db;
+        }
+        
         .chat-item:hover {
             background: #1e2c3a;
         }
         
+        .light-theme .chat-item:hover {
+            background: #f0f2f5;
+        }
+        
         .chat-item.active {
             background: #2b5278;
+        }
+        
+        .light-theme .chat-item.active {
+            background: #e1f0ff;
         }
         
         .chat-avatar {
@@ -175,6 +220,11 @@
         .chat-name {
             font-weight: 500;
             margin-bottom: 5px;
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .chat-name {
+            color: #333;
         }
         
         .last-message {
@@ -184,6 +234,11 @@
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 220px;
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .last-message {
+            color: #7a7f8c;
         }
         
         /* Основная область чата */
@@ -192,6 +247,11 @@
             display: flex;
             flex-direction: column;
             background: #0e1621;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .chat-container {
+            background: #f0f2f5;
         }
         
         .chat-header {
@@ -200,6 +260,12 @@
             border-bottom: 1px solid #1e2c3a;
             display: flex;
             align-items: center;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .chat-header {
+            background: #ffffff;
+            border-bottom: 1px solid #d1d7db;
         }
         
         .header-info {
@@ -210,11 +276,21 @@
         .header-name {
             font-weight: 500;
             font-size: 16px;
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .header-name {
+            color: #333;
         }
         
         .header-status {
             font-size: 13px;
             color: #7f91a4;
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .header-status {
+            color: #7a7f8c;
         }
         
         .chat-messages {
@@ -224,6 +300,11 @@
             display: flex;
             flex-direction: column;
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.03"><rect width="100" height="100" fill="gray"/></svg>');
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .chat-messages {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity="0.05"><rect width="100" height="100" fill="gray"/></svg>');
         }
         
         .message {
@@ -241,6 +322,11 @@
             align-self: flex-start;
             background: #182533;
             border-top-left-radius: 2px;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .received {
+            background: #e1f0ff;
         }
         
         .received::before {
@@ -251,12 +337,23 @@
             border: 8px solid transparent;
             border-top-color: #182533;
             border-right-color: #182533;
+            transition: border-color 0.4s ease;
+        }
+        
+        .light-theme .received::before {
+            border-top-color: #e1f0ff;
+            border-right-color: #e1f0ff;
         }
         
         .sent {
             align-self: flex-end;
             background: #2b5278;
             border-top-right-radius: 2px;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .sent {
+            background: #d1e7ff;
         }
         
         .sent::before {
@@ -267,6 +364,12 @@
             border: 8px solid transparent;
             border-top-color: #2b5278;
             border-left-color: #2b5278;
+            transition: border-color 0.4s ease;
+        }
+        
+        .light-theme .sent::before {
+            border-top-color: #d1e7ff;
+            border-left-color: #d1e7ff;
         }
         
         .message-time {
@@ -274,6 +377,11 @@
             color: #7f91a4;
             text-align: right;
             margin-top: 5px;
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .message-time {
+            color: #7a7f8c;
         }
         
         .message-info {
@@ -286,12 +394,23 @@
             font-weight: 500;
             font-size: 13px;
             margin-bottom: 3px;
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .message-sender {
+            color: #333;
         }
         
         .chat-input-container {
             padding: 15px;
             background: #17212b;
             border-top: 1px solid #1e2c3a;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .chat-input-container {
+            background: #ffffff;
+            border-top: 1px solid #d1d7db;
         }
         
         .input-wrapper {
@@ -300,6 +419,11 @@
             background: #1e2c3a;
             border-radius: 25px;
             padding: 5px 15px;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .input-wrapper {
+            background: #f0f2f5;
         }
         
         .chat-input {
@@ -310,6 +434,11 @@
             color: #e6e6e6;
             outline: none;
             font-size: 15px;
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .chat-input {
+            color: #333;
         }
         
         .send-button {
@@ -324,10 +453,34 @@
             cursor: pointer;
             transition: background 0.2s;
             border: none;
+            margin-left: 10px;
         }
         
         .send-button:hover {
             background: #3c6a97;
+        }
+        
+        .voice-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #2b5278;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        
+        .voice-button:hover {
+            background: #3c6a97;
+        }
+        
+        .voice-button.recording {
+            background: #e74c3c;
+            animation: pulse 1.5s infinite;
         }
         
         .typing-indicator {
@@ -341,6 +494,12 @@
             max-width: 150px;
             font-size: 13px;
             color: #7f91a4;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+        
+        .light-theme .typing-indicator {
+            background: #e1f0ff;
+            color: #7a7f8c;
         }
         
         .typing-dot {
@@ -350,6 +509,11 @@
             border-radius: 50%;
             margin: 0 3px;
             animation: typingAnimation 1.4s infinite ease-in-out;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .typing-dot {
+            background: #7a7f8c;
         }
         
         .typing-dot:nth-child(1) { animation-delay: 0s; }
@@ -366,6 +530,12 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+        
         /* Стили для скроллбара */
         ::-webkit-scrollbar {
             width: 8px;
@@ -374,15 +544,29 @@
         ::-webkit-scrollbar-track {
             background: #0e1621;
             border-radius: 10px;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme ::-webkit-scrollbar-track {
+            background: #eef2f5;
         }
         
         ::-webkit-scrollbar-thumb {
             background: #2b5278;
             border-radius: 10px;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme ::-webkit-scrollbar-thumb {
+            background: #a0c0e0;
         }
         
         ::-webkit-scrollbar-thumb:hover {
             background: #3c6a97;
+        }
+        
+        .light-theme ::-webkit-scrollbar-thumb:hover {
+            background: #7da6d0;
         }
         
         /* Модальное окно обновления */
@@ -398,6 +582,12 @@
             border: 1px solid #2b5278;
             max-width: 300px;
             animation: slideIn 0.5s ease-out;
+            transition: background 0.4s ease;
+        }
+        
+        .light-theme .update-modal {
+            background: #ffffff;
+            border: 1px solid #a0c0e0;
         }
         
         @keyframes slideIn {
@@ -412,6 +602,14 @@
             margin-bottom: 15px;
         }
         
+        .update-header h3 {
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .update-header h3 {
+            color: #333;
+        }
+        
         .close-btn {
             background: transparent;
             border: none;
@@ -423,6 +621,210 @@
         
         .close-btn:hover {
             color: #e6e6e6;
+        }
+        
+        .light-theme .close-btn:hover {
+            color: #333;
+        }
+        
+        .update-modal p {
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .update-modal p {
+            color: #555;
+        }
+        
+        /* Модальное окно настроек */
+        .settings-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .settings-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .settings-content {
+            width: 90%;
+            max-width: 500px;
+            background: #17212b;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5);
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .settings-modal.active .settings-content {
+            transform: translateY(0);
+        }
+        
+        .light-theme .settings-content {
+            background: #ffffff;
+        }
+        
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .settings-header h2 {
+            font-size: 24px;
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .settings-header h2 {
+            color: #333;
+        }
+        
+        .settings-close {
+            background: transparent;
+            border: none;
+            color: #7f91a4;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .settings-close:hover {
+            color: #e6e6e6;
+        }
+        
+        .light-theme .settings-close:hover {
+            color: #333;
+        }
+        
+        .settings-option {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1e2c3a;
+        }
+        
+        .light-theme .settings-option {
+            border-bottom: 1px solid #d1d7db;
+        }
+        
+        .settings-option h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .settings-option h3 {
+            color: #333;
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .theme-toggle span {
+            font-size: 15px;
+            transition: color 0.4s ease;
+        }
+        
+        .light-theme .theme-toggle span {
+            color: #555;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #1e2c3a;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .light-theme .slider {
+            background-color: #d1d7db;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #2b5278;
+        }
+        
+        .light-theme input:checked + .slider {
+            background-color: #a0c0e0;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .settings-button {
+            padding: 12px 25px;
+            background: #2b5278;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .settings-button:hover {
+            background: #3c6a97;
+        }
+        
+        .light-theme .settings-button {
+            background: #a0c0e0;
+            color: #333;
+        }
+        
+        .light-theme .settings-button:hover {
+            background: #7da6d0;
         }
         
         /* Стили для мобильного вида */
@@ -497,12 +899,50 @@
             <h3>Обновление бота</h3>
             <button class="close-btn" id="close-update-modal">&times;</button>
         </div>
-        <p>Бот обновлён до версии 1.1</p>
+        <p>Бот обновлён до версии 1.2</p>
         <p style="margin-top: 10px; font-size: 0.9rem; color: #7f91a4;">
-            • Улучшена производительность<br>
-            • Добавлены новые функции<br>
-            • Исправлены известные ошибки
+            • Сохранение истории в кэш<br>
+            • Новые настройки<br>
+            • Работающий поиск<br>
+            • Голосовые сообщения
         </p>
+    </div>
+    
+    <!-- Модальное окно настроек -->
+    <div class="settings-modal" id="settings-modal">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2>Настройки</h2>
+                <button class="settings-close" id="settings-close">&times;</button>
+            </div>
+            
+            <div class="settings-option">
+                <h3>Тема оформления</h3>
+                <div class="theme-toggle">
+                    <span>Тёмная</span>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span>Светлая</span>
+                </div>
+            </div>
+            
+            <div class="settings-option">
+                <h3>Управление данными</h3>
+                <button class="settings-button" id="clear-data">Очистить данные</button>
+                <button class="settings-button" id="reset-device">Выбрать устройство</button>
+            </div>
+            
+            <div class="settings-option">
+                <h3>Информация о приложении</h3>
+                <p style="margin-bottom: 15px; color: #7f91a4; transition: color 0.4s ease;">
+                    Версия: 1.2<br>
+                    Разработчик: DeepSeek Team
+                </p>
+                <button class="settings-button" id="show-update">Показать обновление</button>
+            </div>
+        </div>
     </div>
 
     <!-- Основное приложение -->
@@ -511,14 +951,17 @@
         <div class="sidebar">
             <div class="sidebar-header">
                 <h1>DeepSeek Боты</h1>
+                <button class="settings-button" id="settings-button" style="width: auto; padding: 8px 12px; margin-top: 0;">
+                    <i class="fas fa-cog"></i>
+                </button>
             </div>
             
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Поиск">
+                <input type="text" placeholder="Поиск по чатам" id="chat-search">
             </div>
             
-            <div class="chats-list">
+            <div class="chats-list" id="chats-list">
                 <!-- Чат с Алисой -->
                 <div class="chat-item active" data-chat="alice">
                     <div class="chat-avatar" style="background: linear-gradient(135deg, #8e44ad, #3498db);">
@@ -592,6 +1035,9 @@
             <!-- Поле ввода -->
             <div class="chat-input-container">
                 <div class="input-wrapper">
+                    <button class="voice-button" id="voice-button">
+                        <i class="fas fa-microphone"></i>
+                    </button>
                     <input type="text" class="chat-input" placeholder="Введите сообщение..." id="message-input">
                     <button class="send-button" id="send-button">
                         <i class="fas fa-paper-plane"></i>
@@ -659,18 +1105,29 @@
         const chatMessages = document.getElementById('chat-messages');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
+        const voiceButton = document.getElementById('voice-button');
         const chatHeader = document.querySelector('.chat-header');
         const headerName = document.querySelector('.header-name');
         const headerStatus = document.querySelector('.header-status');
         const headerAvatar = document.querySelector('.chat-header .chat-avatar');
         const updateModal = document.getElementById('update-modal');
         const closeUpdateModal = document.getElementById('close-update-modal');
+        const settingsModal = document.getElementById('settings-modal');
+        const settingsButton = document.getElementById('settings-button');
+        const settingsClose = document.getElementById('settings-close');
+        const themeToggle = document.getElementById('theme-toggle');
+        const clearDataButton = document.getElementById('clear-data');
+        const resetDeviceButton = document.getElementById('reset-device');
+        const showUpdateButton = document.getElementById('show-update');
+        const chatSearch = document.getElementById('chat-search');
+        const chatsList = document.getElementById('chats-list');
         const body = document.body;
         
         // Текущий активный чат
         let activeChat = 'alice';
         let deviceType = '';
-        let firstVisit = true;
+        let isRecording = false;
+        let recordingTimeout;
         
         // Проверяем, было ли уже выбрано устройство
         if (localStorage.getItem('deviceSelected')) {
@@ -685,6 +1142,9 @@
             
             // Проверяем, нужно ли показать обновление
             checkForUpdate();
+            
+            // Загружаем тему
+            loadTheme();
         }
         
         // Обработчики выбора устройства
@@ -703,10 +1163,12 @@
                 deviceSelector.style.display = 'none';
                 appContainer.style.display = 'flex';
                 
+                // Загружаем историю из localStorage
+                loadChatHistory();
+                
                 // Показываем сообщение об обновлении
                 setTimeout(() => {
                     updateModal.style.display = 'block';
-                    firstVisit = false;
                 }, 1000);
             });
         });
@@ -717,7 +1179,7 @@
         });
         
         // История сообщений
-        const chatHistory = {
+        let chatHistory = {
             alice: [
                 {
                     sender: "bot",
@@ -767,6 +1229,19 @@
                 }
             ]
         };
+        
+        // Загрузка истории из localStorage
+        function loadChatHistory() {
+            const savedHistory = localStorage.getItem('chatHistory');
+            if (savedHistory) {
+                chatHistory = JSON.parse(savedHistory);
+            }
+        }
+        
+        // Сохранение истории в localStorage
+        function saveChatHistory() {
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+        }
         
         // Инициализация чата
         function initChat(chatId) {
@@ -855,6 +1330,9 @@
                     time: time
                 });
                 
+                // Сохраняем историю
+                saveChatHistory();
+                
                 messageInput.value = '';
                 
                 // Для чата пожертвований не отвечаем
@@ -880,6 +1358,9 @@
                         text: response,
                         time: botTime
                     });
+                    
+                    // Сохраняем историю
+                    saveChatHistory();
                 }, 1000 + Math.random() * 2000);
             }
         }
@@ -901,7 +1382,7 @@
         // Проверка обновлений
         function checkForUpdate() {
             const lastVersion = localStorage.getItem('appVersion');
-            const currentVersion = '1.1';
+            const currentVersion = '1.2';
             
             if (!lastVersion || lastVersion !== currentVersion) {
                 localStorage.setItem('appVersion', currentVersion);
@@ -912,6 +1393,120 @@
                 }, 1000);
             }
         }
+        
+        // Управление голосовым сообщением
+        voiceButton.addEventListener('click', () => {
+            if (isRecording) {
+                // Остановка записи
+                stopRecording();
+            } else {
+                // Начало записи
+                startRecording();
+            }
+        });
+        
+        function startRecording() {
+            isRecording = true;
+            voiceButton.classList.add('recording');
+            
+            // Симулируем запись голоса
+            messageInput.placeholder = "Говорите сейчас...";
+            
+            // Записываем "голосовое сообщение"
+            recordingTimeout = setTimeout(() => {
+                stopRecording();
+                
+                // Добавляем сообщение
+                const now = new Date();
+                const time = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+                
+                addMessage("Голосовое сообщение", 'sent', time);
+                chatHistory[activeChat].push({
+                    sender: "user",
+                    text: "Голосовое сообщение",
+                    time: time
+                });
+                
+                // Сохраняем историю
+                saveChatHistory();
+            }, 3000);
+        }
+        
+        function stopRecording() {
+            isRecording = false;
+            voiceButton.classList.remove('recording');
+            messageInput.placeholder = "Введите сообщение...";
+            clearTimeout(recordingTimeout);
+        }
+        
+        // Поиск по чатам
+        chatSearch.addEventListener('input', () => {
+            const searchTerm = chatSearch.value.toLowerCase().trim();
+            const chatItems = document.querySelectorAll('.chat-item');
+            
+            chatItems.forEach(item => {
+                const chatName = item.querySelector('.chat-name').textContent.toLowerCase();
+                if (chatName.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        // Управление настройками
+        settingsButton.addEventListener('click', () => {
+            settingsModal.classList.add('active');
+        });
+        
+        settingsClose.addEventListener('click', () => {
+            settingsModal.classList.remove('active');
+        });
+        
+        // Переключение темы
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.remove('light-theme');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+        
+        // Загрузка темы
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                themeToggle.checked = true;
+                body.classList.add('light-theme');
+            } else {
+                themeToggle.checked = false;
+                body.classList.remove('light-theme');
+            }
+        }
+        
+        // Очистка данных
+        clearDataButton.addEventListener('click', () => {
+            if (confirm("Вы уверены, что хотите очистить все данные? Это действие нельзя отменить.")) {
+                localStorage.removeItem('chatHistory');
+                localStorage.removeItem('appVersion');
+                location.reload();
+            }
+        });
+        
+        // Сброс устройства
+        resetDeviceButton.addEventListener('click', () => {
+            localStorage.removeItem('deviceSelected');
+            localStorage.removeItem('deviceType');
+            location.reload();
+        });
+        
+        // Показать обновление
+        showUpdateButton.addEventListener('click', () => {
+            settingsModal.classList.remove('active');
+            updateModal.style.display = 'block';
+        });
         
         // Обработчики событий
         sendButton.addEventListener('click', sendMessage);
@@ -925,6 +1520,7 @@
         // Инициализация первого чата
         window.addEventListener('load', () => {
             if (localStorage.getItem('deviceSelected')) {
+                loadChatHistory();
                 initChat('alice');
                 messageInput.focus();
             }
